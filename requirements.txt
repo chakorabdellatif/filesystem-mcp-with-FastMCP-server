@@ -1,0 +1,21 @@
+# MCP Server
+fastmcp>=0.2.0
+
+# OpenAI Client
+openai>=1.12.0
+
+# HTTP Client
+httpx>=0.26.0
+
+# PDF Processing
+pypdf2>=3.0.0
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# Streamlit UI
+streamlit>=1.31.0
+pandas>=2.0.0
+
+# Additional utilities
+pathlib>=1.0.1

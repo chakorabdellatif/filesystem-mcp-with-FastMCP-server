@@ -1,0 +1,48 @@
+{
+  "project": {
+    "name": "Filesystem MCP Server",
+    "version": "1.0.0",
+    "description": "A Model Context Protocol server for filesystem operations",
+    "tools": [
+      "read_file",
+      "write_file",
+      "append_file",
+      "delete_file",
+      "list_directory",
+      "create_directory",
+      "move_file",
+      "get_file_info"
+    ],
+    "resources": [
+      "pdf_summary"
+    ]
+  },
+  "configuration": {
+    "transport": "HTTP/JSON-RPC",
+    "llm": "OpenAI GPT-4",
+    "framework": "FastMCP"
+  },
+  "features": {
+    "sandboxed": true,
+    "path_validation": true,
+    "security": "High"
+  },
+  "test_data": {
+    "users": [
+      {
+        "id": 1,
+        "name": "Alice",
+        "role": "Developer"
+      },
+      {
+        "id": 2,
+        "name": "Bob",
+        "role": "Tester"
+      }
+    ],
+    "stats": {
+      "files_processed": 0,
+      "operations_count": 0
+    }
+  }
+}

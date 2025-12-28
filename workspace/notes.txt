@@ -1,0 +1,24 @@
+📝 Workspace Notes
+==================
+
+Welcome to your MCP Filesystem workspace!
+
+This is a sample text file for testing the MCP server.
+
+You can:
+- Read this file using the read_file tool
+- Append to it using the append_file tool
+- Move it using the move_file tool
+- Get its info using the get_file_info tool
+
+Try asking the AI assistant to:
+1. "List all files in the workspace"
+2. "Read this notes.txt file"
+3. "Create a new file with some content"
+4. "Organize files by creating folders"
+
+Happy testing! 🚀
+
+---
+Last updated: 2024-01-01
+Version: 1.0
