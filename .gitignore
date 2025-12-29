@@ -3,3 +3,4 @@
 workspace/here
 workspace/test
 venv
+*.pyc
