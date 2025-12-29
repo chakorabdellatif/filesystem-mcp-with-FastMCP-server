@@ -2,3 +2,4 @@
 .env
 workspace/here
 workspace/test
+venv
