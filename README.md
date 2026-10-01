@@ -158,6 +158,7 @@ black --check server/ host/
 ---
 
 ## 👥 Contributors & Authors
+<!-- Co-maintained by Bosaj & chakorabdellatif -->
 
 * **[Oussama EL HADJI (@Bosaj)](https://github.com/Bosaj)** — Core Architecture, FastMCP server implementation, and CI/CD pipelines.
 * **[chakorabdellatif](https://github.com/chakorabdellatif)** — Collaborative development and testing.
