@@ -33,6 +33,29 @@ class TestFilesystemMCPServer(unittest.TestCase):
         resolved = validate_path("sample.txt")
         self.assertEqual(resolved, (WORKSPACE_DIR / "sample.txt").resolve())
 
+    def test_nested_path_inside_workspace_is_allowed(self):
+        resolved = validate_path("notes/2026/today.txt")
+        self.assertTrue(resolved.is_relative_to(WORKSPACE_DIR.resolve()))
+
+    def test_sibling_folder_with_same_prefix_is_blocked(self):
+        # "<root>/workspace2" starts with the text "<root>/workspace" but is outside it.
+        sibling = f"../{WORKSPACE_DIR.name}2/secret.txt"
+        with self.assertRaises(ValueError) as ctx:
+            validate_path(sibling)
+        self.assertIn("Path traversal detected", str(ctx.exception))
+
+    def test_symlink_pointing_outside_is_blocked(self):
+        link = WORKSPACE_DIR / "escape_link"
+        try:
+            link.symlink_to(WORKSPACE_DIR.parent, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks are not available on this system")
+        try:
+            with self.assertRaises(ValueError):
+                validate_path("escape_link/README.md")
+        finally:
+            link.unlink()
+
 
 if __name__ == "__main__":
     unittest.main()
