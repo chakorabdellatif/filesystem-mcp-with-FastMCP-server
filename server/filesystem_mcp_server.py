@@ -29,11 +29,13 @@ def validate_path(path: str) -> Path:
     if requested_path.is_absolute():
         raise ValueError("Absolute paths are not allowed")
 
-    # Resolve relative to workspace
-    full_path = (WORKSPACE_DIR / requested_path).resolve()
+    # Resolve relative to workspace (follows "..", symlinks and mixed separators)
+    workspace_root = WORKSPACE_DIR.resolve()
+    full_path = (workspace_root / requested_path).resolve()
 
-    # Ensure path is within workspace
-    if not str(full_path).startswith(str(WORKSPACE_DIR)):
+    # Ensure path is within workspace. A text prefix test is not enough:
+    # "/x/workspace2/secret" starts with the text "/x/workspace".
+    if not full_path.is_relative_to(workspace_root):
         raise ValueError("Path traversal detected - access denied")
 
     return full_path
