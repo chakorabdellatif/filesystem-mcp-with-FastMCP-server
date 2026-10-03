@@ -16,6 +16,3 @@ python-dotenv>=1.0.0
 # Streamlit UI
 streamlit>=1.31.0
 pandas>=2.0.0
-
-# Additional utilities
-pathlib>=1.0.1
