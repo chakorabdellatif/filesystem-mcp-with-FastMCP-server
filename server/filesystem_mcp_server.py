@@ -9,6 +9,7 @@ from pathlib import Path
 
 from config import MCP_SERVER_HOST, MCP_SERVER_PORT, WORKSPACE_DIR
 from fastmcp import FastMCP
+from server.extended_tools import register_extended_tools
 
 # Initialize FastMCP server
 mcp = FastMCP("Filesystem MCP Server")
@@ -340,6 +341,10 @@ def get_file_info(path: str) -> str:
         return f"❌ Error getting file info: {e!s}"
 
 
+# Register Extended Enterprise Tools (DuckDB, SPARQL, S3)
+register_extended_tools(mcp, validate_path)
+
+
 # ==================== SERVER STARTUP ====================
 
 if __name__ == "__main__":
@@ -347,9 +352,10 @@ if __name__ == "__main__":
     print(f"📁 Workspace directory: {WORKSPACE_DIR}")
     print(f"🌐 Server running on http://{MCP_SERVER_HOST}:{MCP_SERVER_PORT}")
     print(f"🔗 SSE endpoint: http://{MCP_SERVER_HOST}:{MCP_SERVER_PORT}/sse")
-    print("✅ Available tools: 9")
+    print("✅ Available core tools: 9")
+    print("✅ Available extended tools: 3 (query_duckdb, query_sparql, s3_manage_asset)")
     print("✅ Available resources: 1 (PDF)")
-    print("\n🔧 Tools registered:")
+    print("\n🔧 Core Tools registered:")
     print("  1. read_file")
     print("  2. write_file")
     print("  3. append_file")
@@ -359,8 +365,12 @@ if __name__ == "__main__":
     print("  7. move_file")
     print("  8. get_file_info")
     print("  9. health_check")
+    print(" 10. query_duckdb (Extended)")
+    print(" 11. query_sparql (Extended)")
+    print(" 12. s3_manage_asset (Extended)")
     print("\n🎨 Streamlit UI: streamlit run app.py")
     print("⌨️  Press Ctrl+C to stop\n")
 
     # Run server with SSE transport
     mcp.run(transport="sse", host=MCP_SERVER_HOST, port=MCP_SERVER_PORT)
+
