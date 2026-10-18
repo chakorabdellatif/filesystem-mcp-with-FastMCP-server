@@ -7,9 +7,15 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from config import MCP_SERVER_HOST, MCP_SERVER_PORT, WORKSPACE_DIR
+try:
+    from server.config import MCP_SERVER_HOST, MCP_SERVER_PORT, WORKSPACE_DIR
+except ImportError:
+    from config import MCP_SERVER_HOST, MCP_SERVER_PORT, WORKSPACE_DIR
 from fastmcp import FastMCP
-from server.extended_tools import register_extended_tools
+try:
+    from server.extended_tools import register_extended_tools
+except ImportError:
+    from extended_tools import register_extended_tools
 
 # Initialize FastMCP server
 mcp = FastMCP("Filesystem MCP Server")
@@ -20,26 +26,20 @@ mcp = FastMCP("Filesystem MCP Server")
 
 def validate_path(path: str) -> Path:
     """
-    Validate and resolve path within workspace.
-    Prevents path traversal attacks.
+    Validate and resolve path.
+    Supports both:
+    1. Global absolute paths across any directory on the PC (e.g., C:/Users/ROG FLOW/...).
+    2. Relative paths resolved relative to workspace root or current folder.
     """
-    # Convert to Path object
     requested_path = Path(path)
 
-    # Resolve to absolute path within workspace
+    # If already an absolute path anywhere on the PC, resolve directly
     if requested_path.is_absolute():
-        raise ValueError("Absolute paths are not allowed")
+        return requested_path.resolve()
 
-    # Resolve relative to workspace (follows "..", symlinks and mixed separators)
+    # If relative, resolve against workspace root
     workspace_root = WORKSPACE_DIR.resolve()
-    full_path = (workspace_root / requested_path).resolve()
-
-    # Ensure path is within workspace. A text prefix test is not enough:
-    # "/x/workspace2/secret" starts with the text "/x/workspace".
-    if not full_path.is_relative_to(workspace_root):
-        raise ValueError("Path traversal detected - access denied")
-
-    return full_path
+    return (workspace_root / requested_path).resolve()
 
 
 # ==================== TOOL 1: READ FILE ====================
@@ -348,29 +348,16 @@ register_extended_tools(mcp, validate_path)
 # ==================== SERVER STARTUP ====================
 
 if __name__ == "__main__":
-    print("🚀 MCP Server starting...")
-    print(f"📁 Workspace directory: {WORKSPACE_DIR}")
-    print(f"🌐 Server running on http://{MCP_SERVER_HOST}:{MCP_SERVER_PORT}")
-    print(f"🔗 SSE endpoint: http://{MCP_SERVER_HOST}:{MCP_SERVER_PORT}/sse")
-    print("✅ Available core tools: 9")
-    print("✅ Available extended tools: 3 (query_duckdb, query_sparql, s3_manage_asset)")
-    print("✅ Available resources: 1 (PDF)")
-    print("\n🔧 Core Tools registered:")
-    print("  1. read_file")
-    print("  2. write_file")
-    print("  3. append_file")
-    print("  4. delete_file")
-    print("  5. list_directory")
-    print("  6. create_directory")
-    print("  7. move_file")
-    print("  8. get_file_info")
-    print("  9. health_check")
-    print(" 10. query_duckdb (Extended)")
-    print(" 11. query_sparql (Extended)")
-    print(" 12. s3_manage_asset (Extended)")
-    print("\n🎨 Streamlit UI: streamlit run app.py")
-    print("⌨️  Press Ctrl+C to stop\n")
-
-    # Run server with SSE transport
-    mcp.run(transport="sse", host=MCP_SERVER_HOST, port=MCP_SERVER_PORT)
+    import sys
+    is_sse = "--sse" in sys.argv
+    if is_sse:
+        print("🚀 MCP Server starting in SSE mode...")
+        print(f"📁 Workspace directory: {WORKSPACE_DIR}")
+        print(f"🌐 Server running on http://{MCP_SERVER_HOST}:{MCP_SERVER_PORT}")
+        print(f"🔗 SSE endpoint: http://{MCP_SERVER_HOST}:{MCP_SERVER_PORT}/sse")
+        mcp.run(transport="sse", host=MCP_SERVER_HOST, port=MCP_SERVER_PORT)
+    else:
+        sys.stderr.write("🚀 Filesystem MCP Server starting in stdio mode...\n")
+        sys.stderr.write(f"📁 Workspace directory: {WORKSPACE_DIR}\n")
+        mcp.run(transport="stdio")
 
