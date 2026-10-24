@@ -5,10 +5,11 @@ Configuration for MCP Filesystem Server
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 # Server configuration
 MCP_SERVER_HOST = os.getenv("MCP_SERVER_HOST", "127.0.0.1")
@@ -46,4 +47,5 @@ ALLOWED_EXTENSIONS = {
 # Maximum file size (10MB)
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
-print(f"📁 Workspace directory: {WORKSPACE_DIR}")
+import sys
+sys.stderr.write(f"📁 Workspace directory: {WORKSPACE_DIR}\n")
